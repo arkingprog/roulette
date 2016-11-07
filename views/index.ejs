@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Roulette</title>
+    <link rel='stylesheet' href='/stylesheets/style.css'/>
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="/stylesheets/materialize.min.css">
+
+</head>
+<body>
+
+<div class="container">
+    <div class="col s12 center-align">
+        <h3 class="text-accent-1">Время до розыгрыша: <span class="time">0</span></h3>
+    </div>
+    <div class="col s12 center-align">
+        <h3 class="text-accent-1">Баланс: <span class="balance">0</span></h3>
+    </div>
+    <div class="col s12 center-align">
+        <input type="number" placeholder="Введите вашу ставку" id="betPrice">
+    </div>
+    <div class="col s12 center-align">
+        <form action="#">
+            <p>
+                <input name="group1" type="radio" id="red" value="red"/>
+                <label for="red" class="materialize-red-text">Red</label>
+            </p>
+            <p>
+                <input name="group1" type="radio" id="green" value="green"/>
+                <label for="green" class="green-text">Green</label>
+            </p>
+            <p>
+                <input name="group1" type="radio" id="black" value="black"/>
+                <label for="black" class="black-text">Black</label>
+            </p>
+        </form>
+    </div>
+    <div class="col s12 center-align">
+        <a class="waves-effect waves-light btn" id="btnPlay">Сыграть</a>
+    </div>
+    <div class="col s12 center-align">
+        <h3>Ваш результат: <span id="win">0</span></h3>
+    </div>
+
+</div>
+<!-- Compiled and minified JavaScript -->
+<script src="./javascripts/jquery-3.1.1.min.js"></script>
+<script src="./javascripts/materialize.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script src="./javascripts/index.js"></script>
+</body>
+</html>
