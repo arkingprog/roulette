@@ -19,22 +19,23 @@ class Game extends EventEmitter {
 
     mainLoop() {
         let _this = this;
-        this.emit('newGame');
+        this.emit('game:newGame');
         let mainInterval = setInterval(function() {
             --_this.time;
             if (_this.time === 0) {
                 _this.time = 30;
-                _this.emit('startRaffle');
+                _this.emit('game:startRaffle');
                 setTimeout(function() { // raffle
                     let win = _this.raffle();
-                    _this.emit('resultRaffle', win);
-                    // _this.lastWins.push(win);
+                    _this.emit('game:resultRaffle', win);
+                    _this.lastWins.push(win);
                     _this.mainLoop();
                 }.bind(_this), 8 * 1000);
                 clearInterval(mainInterval);
             }
         }, 1 * 1000)
     }
+
 
     getTime() {
         return this.time;

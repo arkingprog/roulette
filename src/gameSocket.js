@@ -1,51 +1,69 @@
 let Game = require('./Game');
-module.exports = function (io) {
+let User = require('./User');
+module.exports = function(io) {
+
     let game = new Game(io.sockets);
     game.setMaxListeners(0);
 
-    io.on('connection', function (socket) {
-        let currentPlayer = {};
-        socket.emit('newUser', {time: game.getTime(), lastWin: game.lastWin})
+    io.on('connection', function(socket) {
 
-        socket.on('newBet', (data)=> {
-            currentPlayer = data;
+        let currentPlayer = {};
+
+        socket.emit('newUser', {
+            time: game.getTime(),
+            lastWin: game.lastWin
         })
-        game.on('newGame', () => {
-            socket.emit('newGame', {newGame: true, lastWin: game.lastWin});
+
+        socket.on('newBet', (data) => {
+            currentPlayer = new User(data, socket);
         })
-        game.on('startRaffle', ()=> {
-            socket.emit('startRaffle', {startRaffle: 'startRaffle'})
+
+        game.on('game:newGame', () => {
+            socket.emit('newGame', {
+                newGame: true,
+                lastWin: game.lastWin
+            });
         })
-        game.on('resultRaffle', (win)=> {
+
+        game.on('game:startRaffle', () => {
+            socket.emit('startRaffle', {
+                startRaffle: 'startRaffle'
+            })
+        })
+
+        game.on('game:resultRaffle', (win) => {
             let winColor = game.arrayRange[win];
             if (Object.keys(currentPlayer).length == 0) {
-                console.log(Object.keys(currentPlayer).length,'no');
-                socket.emit('resultRaffle', {win: winColor})
+                socket.emit('resultRaffle', {
+                    win: winColor
+                })
             } else {
-                let playerWin = 1;
-                // console.log(currentPlayer,'yse');
+                currentPlayer.playerWin = 1;
                 if (currentPlayer.betColor == winColor) {
                     switch (winColor) {
                         case 'red':
                         case 'black':
-                            playerWin = currentPlayer.betPrice * 2;
+                            currentPlayer.playerWin = currentPlayer.betPrice * 2;
                             break;
                         case 'green':
-                            playerWin = currentPlayer.betPrice * 14;
+                            currentPlayer.playerWin = currentPlayer.betPrice * 14;
                             break;
                     }
                 } else {
-                    playerWin = -currentPlayer.betPrice;
+                    currentPlayer.playerWin = -currentPlayer.betPrice;
                 }
-                console.log(currentPlayer.betColor);
-                socket.emit('resultRaffle', {win: game.arrayRange[win], playerWin: playerWin,playerBet:currentPlayer.betColor})
+                socket.emit('resultRaffle', {
+                    win: game.arrayRange[win],
+                    playerWin: currentPlayer.playerWin,
+                    playerBet: currentPlayer.betColor
+                })
+                currentPlayer.emit('user:win')
                 currentPlayer = {};
             }
-
         })
 
-        socket.on('disconnect', function (data) {
-        });
+        socket.on('disconnect', function(data) {
 
+        });
     });
 }
