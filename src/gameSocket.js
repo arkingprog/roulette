@@ -23,6 +23,7 @@ module.exports = function(io) {
                 newGame: true,
                 lastWin: game.lastWin
             });
+            game.sendLastResult();
         })
 
         game.on('game:startRaffle', () => {
@@ -33,10 +34,12 @@ module.exports = function(io) {
 
         game.on('game:resultRaffle', (win) => {
             let winColor = game.arrayRange[win];
-            if (Object.keys(currentPlayer).length == 0) {
+            if (Object.keys(currentPlayer).length === 0 && currentPlayer.constructor === Object) {
                 socket.emit('resultRaffle', {
-                    win: winColor
+                    winColor: winColor,
+                    win: win
                 })
+                return;
             } else {
                 currentPlayer.playerWin = 1;
                 if (currentPlayer.betColor == winColor) {
@@ -53,7 +56,8 @@ module.exports = function(io) {
                     currentPlayer.playerWin = -currentPlayer.betPrice;
                 }
                 socket.emit('resultRaffle', {
-                    win: game.arrayRange[win],
+                    winColor: game.arrayRange[win],
+                    win: win,
                     playerWin: currentPlayer.playerWin,
                     playerBet: currentPlayer.betColor
                 })
@@ -63,6 +67,7 @@ module.exports = function(io) {
         })
 
         socket.on('disconnect', function(data) {
+            game.removeAllListeners();
 
         });
     });

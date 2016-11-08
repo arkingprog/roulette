@@ -5,6 +5,7 @@ function randomInteger(min, max) {
     rand = Math.round(rand);
     return rand;
 }
+
 class Game extends EventEmitter {
     constructor(socket) {
         super();
@@ -15,6 +16,12 @@ class Game extends EventEmitter {
         this.players = [];
         this.arrayRange = ['green', 'red', 'red', 'red', 'red', 'red', 'red', 'red', 'black', 'black', 'black', 'black', 'black', 'black', 'black'];
         this.mainLoop();
+
+
+    }
+
+    sendLastResult() {
+        this.socket.emit('sendLastResult', this.lastWins.slice(Math.max(this.lastWins.length - 5, 1)));
     }
 
     mainLoop() {
@@ -25,17 +32,18 @@ class Game extends EventEmitter {
             if (_this.time === 0) {
                 _this.time = 30;
                 _this.emit('game:startRaffle');
+
                 setTimeout(function() { // raffle
                     let win = _this.raffle();
-                    _this.emit('game:resultRaffle', win);
                     _this.lastWins.push(win);
+                    _this.emit('game:resultRaffle', win);
                     _this.mainLoop();
                 }.bind(_this), 8 * 1000);
+
                 clearInterval(mainInterval);
             }
         }, 1 * 1000)
     }
-
 
     getTime() {
         return this.time;

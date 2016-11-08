@@ -1,6 +1,10 @@
 $(window).on('load', function() {
+    var arrayRange = ['green', 'red', 'red', 'red', 'red', 'red', 'red', 'red', 'black', 'black', 'black', 'black', 'black', 'black', 'black'];
+
+
     var user = getUserFromLocalStorage();
     $('.balance').text(user.balance);
+
     var time = 0;
     var timeText = $('.time');
     // updateUserInLocalStorage(user);
@@ -12,12 +16,18 @@ $(window).on('load', function() {
     });
 
     socket.on('newGame', function(data) {
-        console.log(data);
         setTime({
             time: 30
         })
     });
-
+    socket.on('sendLastResult', function(data) {
+        console.log(data);
+        $('.lastResult').empty();
+        data.forEach(function(i) {
+            var innerText='<span style="color:'+ arrayRange[i] +'"> ' + i + ' </span>'
+            $('.lastResult').append(innerText);
+        })
+    })
 
     socket.on('resultRaffle', function(data) {
         console.log(data);
@@ -69,8 +79,10 @@ $(window).on('load', function() {
         $(timeText).text(--time);
         var timer = setInterval(function() {
             $(timeText).text(--time);
-            if (time === 0)
+            if (time === 0) {
+                $(timeText).text('Идет розыгрыш');
                 clearInterval(timer);
+            }
         }, 1000)
     }
 })

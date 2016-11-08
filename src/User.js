@@ -9,14 +9,14 @@ class User extends EventEmitter {
         Object.assign(this, user.user);
         this.playerWin = 0;
 
-
         this.on('user:win', () => {
             socket.emit('user:win',this)
         })
-
     }
+
     playerWin(){
         return this.playerWin;
     }
+
 }
 module.exports = User;
